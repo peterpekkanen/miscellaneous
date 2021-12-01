@@ -16,7 +16,7 @@ def main():
     #hostPublic = '127.0.0.1'
     #hostLocal = '127.0.0.1'
     bracket = '**************************************************\n'
-    response = -1
+    response = -1   #Dummy
 
     
 
@@ -24,7 +24,7 @@ def main():
     timeAndDate = now.strftime("%d/%m %H:%M:%S")
 
     f = open("log.txt", "a")
-    if os.stat("log.txt").st_size != 0:
+    if os.stat("log.txt").st_size != 0: #File formating
         f.write('\n')
     f.write(timeAndDate + ' STARTING SCRIPT\nPublic IP: ' + hostPublic + '\nLocal IP: ' + hostLocal + '\nTargetting OID: ' + oid + '\n' + bracket) 
     f.close()
@@ -32,13 +32,13 @@ def main():
     
     while True:
 
-        response = pingPublic(hostPublic)   #Pings hosts public IP
+        response = pingPublic(hostPublic)   #Pings public ip
 
-        #Timestamp 
+        #Time
         now = datetime.now()
-        timeAndDate = dt_string = now.strftime("%d/%m %H:%M:%S")
+        timeAndDate = now.strftime("%d/%m %H:%M:%S")
 
-        #Reacts on results of ping
+        #Result of pings
         if response == 0:
             print(bracket)
             logThis = timeAndDate + " PINGS SUCCESSFUL "
@@ -67,9 +67,10 @@ def main():
         time.sleep(2)
         
 def pingPublic(hostPublic):
+    i = '1' #Number of pings
     parameter = '-n' if platform.system().lower()=='windows' else '-c'
 
-    command = ['ping', parameter, '1', hostPublic]
+    command = ['ping', parameter, i, hostPublic]
     response = subprocess.call(command)
 
     return response
@@ -94,9 +95,25 @@ def getSnmp(oid, host):
         string = str(varBind)
         print(' = '.join([x.prettyPrint() for x in varBind]))
         f = open("log.txt", "a")
-        f.write(string) #if snmp-get fails the log.txt entry will be blank
+        dbmVal = rssiDbm(int(string[-2:]))
+        f.write(string + " ; dBm = " + str(dbmVal)) #If blank statement snmp-get failed.
         f.close()
 
+def rssiDbm(value): #Converting RSSI to dBm
+    if value <= 4:
+        return -100
+    elif value <= 8:
+        return -90
+    elif value <= 14:
+        return -80
+    elif value <= 20:
+        return -70
+    elif value <= 26:
+        return -60
+    elif value > 26:
+        return -50
+    else:
+        print("ERROR")
 
 
 if __name__ == '__main__':
