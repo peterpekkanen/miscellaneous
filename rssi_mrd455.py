@@ -10,8 +10,8 @@ import time
 
 def main():
     oid = '.1.3.6.1.4.1.16177.1.200.3.3.0'  #OID
-    hostPublic = ''           #Public IP
-    hostLocal = ''            #Local IP
+    hostPublic = '217.174.88.24'           #Public IP
+    hostLocal = '192.168.2.200'            #Local IP
     #Debug IP
     #hostPublic = '127.0.0.1'
     #hostLocal = '127.0.0.1'
@@ -99,7 +99,7 @@ def getSnmp(oid, host):
         f.write(string + " ; dBm = " + str(dbmVal)) #If blank statement snmp-get failed.
         f.close()
 
-def rssiDbm(value): #Converting RSSI to dBm
+def rssiDbm(value): #Converting RSSI to dBm (Inaccurate)
     if value <= 4:
         return -100
     elif value <= 8:
